@@ -41,6 +41,11 @@ import org.slf4j.LoggerFactory;
 public final class MetricsService {
 
   private static final Logger LOG = LoggerFactory.getLogger(MetricsService.class);
+  private static final String[] COLLECTED_METRICS
+    = {"org.apache.cassandra.metrics:type=ThreadPools,path=request,*",
+       "org.apache.cassandra.metrics:type=ThreadPools,path=internal,*",
+       "org.apache.cassandra.metrics:type=ClientRequest,*",
+       "org.apache.cassandra.metrics:type=DroppedMessage,*"};
 
   private final AppContext context;
   private final ClusterFacade clusterFacade;

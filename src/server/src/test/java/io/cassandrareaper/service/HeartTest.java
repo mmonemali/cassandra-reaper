@@ -326,7 +326,7 @@ public final class HeartTest {
 
     Mockito.verify((CassandraStorage)context.storage, Mockito.times(1)).saveHeartbeat();
     Mockito.verify((CassandraStorage)context.storage, Mockito.times(2)).getNodeMetrics(any());
-    Mockito.verify(context.jmxConnectionFactory, Mockito.times(2)).connectAny(any(Collection.class));
+    Mockito.verify(context.jmxConnectionFactory, Mockito.times(2)).connect(any());
     Mockito.verify((CassandraStorage)context.storage, Mockito.times(2)).storeNodeMetrics(any(), any());
   }
 
@@ -396,7 +396,7 @@ public final class HeartTest {
 
     Mockito.verify((CassandraStorage)context.storage, Mockito.times(2)).saveHeartbeat();
     Mockito.verify((CassandraStorage)context.storage, Mockito.times(2)).getNodeMetrics(any());
-    Mockito.verify(context.jmxConnectionFactory, Mockito.times(2)).connectAny(any(Collection.class));
+    Mockito.verify(context.jmxConnectionFactory, Mockito.times(2)).connect(any());
     Mockito.verify((CassandraStorage)context.storage, Mockito.times(2)).storeNodeMetrics(any(), any());
   }
 }

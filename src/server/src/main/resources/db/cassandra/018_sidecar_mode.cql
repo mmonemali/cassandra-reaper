@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS node_operations (
     host text,
     ts timestamp,
     data text,
-    PRIMARY KEY ((cluster, type, time_bucket), host, ts)
-) WITH CLUSTERING ORDER BY (host ASC, ts DESC)
+    PRIMARY KEY ((cluster, type, time_bucket), host)
+) WITH CLUSTERING ORDER BY (host ASC)
     AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4', 'unchecked_tombstone_compaction': 'true'}
-    AND default_time_to_live = 864000
-    AND gc_grace_seconds = 10800;
+    AND default_time_to_live = 300
+    AND gc_grace_seconds = 300;

@@ -22,7 +22,7 @@ case "${TEST_TYPE}" in
         echo "ERROR: Environment variable TEST_TYPE is unspecified."
         exit 1
         ;;
-    "ccm"|"upgrade")
+    "ccm"|"upgrade"|"sidecar")
         cp src/ci/jmxremote.password ~/.local/jmxremote.password
         chmod 400 ~/.local/jmxremote.password
         cat /usr/lib/jvm/java-8-oracle/jre/lib/management/jmxremote.access

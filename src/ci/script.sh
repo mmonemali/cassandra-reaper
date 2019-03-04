@@ -53,6 +53,16 @@ case "${TEST_TYPE}" in
             mvn -B surefire:test -DsurefireArgLine="-Xmx512m" -Dtest=ReaperCassandraIT -Dgrim.reaper.min=${GRIM_MIN} -Dgrim.reaper.max=${GRIM_MAX}
         fi
         ;;
+    "sidecar")
+        mvn --version -B
+        ccm start
+        sleep 30
+        ccm status
+
+        mvn -B install
+
+        mvn -B surefire:test -DsurefireArgLine="-Xmx512m" -Dtest=ReaperCassandraSidecarIT
+        ;;
     "upgrade")
         mvn --version -B
         ccm start

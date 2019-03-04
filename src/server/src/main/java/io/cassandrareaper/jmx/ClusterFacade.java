@@ -54,8 +54,8 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import jersey.repackaged.com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

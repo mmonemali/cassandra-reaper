@@ -87,19 +87,19 @@ jobs:
       name: Two Reapers on Cassandra 4.0
       env: TEST_TYPE=ccm CASSANDRA_VERSION=git:trunk GRIM_MIN=2 GRIM_MAX=2
     - stage: Sidecar Integration Tests
-      name: Cassandra 2.1.20
+      name: Sidecar on Cassandra 2.1.20
       env: TEST_TYPE=sidecar CASSANDRA_VERSION=2.1.20 GRIM_MIN=1 GRIM_MAX=1
     - stage: Sidecar Integration Tests
-      name: Cassandra 2.2.13
+      name: Sidecar on Cassandra 2.2.13
       env: TEST_TYPE=sidecar CASSANDRA_VERSION=2.2.13 GRIM_MIN=1 GRIM_MAX=1
     - stage: Sidecar Integration Tests
-      name: Cassandra 3.0.17
+      name: Sidecar on Cassandra 3.0.17
       env: TEST_TYPE=sidecar CASSANDRA_VERSION=3.0.17 GRIM_MIN=1 GRIM_MAX=1
     - stage: Sidecar Integration Tests
-      name: Cassandra 3.11.3
+      name: Sidecar on Cassandra 3.11.3
       env: TEST_TYPE=sidecar CASSANDRA_VERSION=3.11.3 GRIM_MIN=1 GRIM_MAX=1
     - stage: Sidecar Integration Tests
-      name: Cassandra 4.0
+      name: Sidecar on Cassandra 4.0
       env: TEST_TYPE=sidecar CASSANDRA_VERSION=git:trunk GRIM_MIN=1 GRIM_MAX=1
     - stage: Flapping Distributed Reaper Integration Tests
       name: Four Flapping Reaper on Cassandra 2.1.20

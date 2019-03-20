@@ -83,6 +83,7 @@ final class SegmentRunner implements RepairStatusHandler, Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(SegmentRunner.class);
 
   private static final int MAX_TIMEOUT_EXTENSIONS = 10;
+  private static final int LOCK_DURATION = 30;
   private static final Pattern REPAIR_UUID_PATTERN
       = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
@@ -607,7 +608,7 @@ final class SegmentRunner implements RepairStatusHandler, Runnable {
           LOG.debug("failed to query metrics for host {}, trying to get metrics from storage...", node, e);
         }
       }
-      return nodeDc.equals(localDc)
+      return nodeDc.equals(localDc) && DatacenterAvailability.SIDECAR != context.config.getDatacenterAvailability()
           ? Optional.empty()
           : getRemoteNodeMetrics(node, nodeDc);
     });

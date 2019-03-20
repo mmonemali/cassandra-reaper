@@ -404,10 +404,10 @@ public final class CassandraStorage implements IStorage, IDistributedStorage {
     takeLeadPrepStmt = session
         .prepare(
             "INSERT INTO leader(leader_id, reaper_instance_id, reaper_instance_host, last_heartbeat)"
-                + "VALUES(?, ?, ?, " + timeUdf + "(now())) IF NOT EXISTS");
+                + "VALUES(?, ?, ?, " + timeUdf + "(now())) IF NOT EXISTS USING TTL ?");
     renewLeadPrepStmt = session
         .prepare(
-            "UPDATE leader SET reaper_instance_id = ?, reaper_instance_host = ?,"
+            "UPDATE leader USING TTL ? SET reaper_instance_id = ?, reaper_instance_host = ?,"
                 + " last_heartbeat = " + timeUdf + "(now()) WHERE leader_id = ? IF reaper_instance_id = ?");
     releaseLeadPrepStmt = session.prepare("DELETE FROM leader WHERE leader_id = ? IF reaper_instance_id = ?");
     forceReleaseLeadPrepStmt = session.prepare("DELETE FROM leader WHERE leader_id = ?");
@@ -1293,24 +1293,35 @@ public final class CassandraStorage implements IStorage, IDistributedStorage {
 
   @Override
   public boolean takeLead(UUID leaderId) {
+    return takeLead(leaderId, LEAD_DURATION);
+  }
+
+  @Override
+  public boolean takeLead(UUID leaderId, int ttl) {
     LOG.debug("Trying to take lead on segment {}", leaderId);
     ResultSet lwtResult = session.execute(
-        takeLeadPrepStmt.bind(leaderId, AppContext.REAPER_INSTANCE_ID, AppContext.REAPER_INSTANCE_ADDRESS));
+        takeLeadPrepStmt.bind(leaderId, AppContext.REAPER_INSTANCE_ID, AppContext.REAPER_INSTANCE_ADDRESS, ttl));
 
     if (lwtResult.wasApplied()) {
       LOG.debug("Took lead on segment {}", leaderId);
       return true;
     }
 
-    // Another instance took the lead on the segmen
+    // Another instance took the lead on the segment
     LOG.debug("Could not take lead on segment {}", leaderId);
     return false;
   }
 
   @Override
   public boolean renewLead(UUID leaderId) {
+    return renewLead(leaderId, LEAD_DURATION);
+  }
+
+  @Override
+  public boolean renewLead(UUID leaderId, int ttl) {
     ResultSet lwtResult = session.execute(
         renewLeadPrepStmt.bind(
+            ttl,
             AppContext.REAPER_INSTANCE_ID,
             AppContext.REAPER_INSTANCE_ADDRESS,
             leaderId,

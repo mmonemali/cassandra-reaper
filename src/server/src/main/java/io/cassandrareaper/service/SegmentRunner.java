@@ -619,15 +619,17 @@ final class SegmentRunner implements RepairStatusHandler, Runnable {
     Preconditions.checkState(context.storage instanceof IDistributedStorage);
     IDistributedStorage storage = ((IDistributedStorage) context.storage);
     Optional<NodeMetrics> result = storage.getNodeMetrics(repairRunner.getRepairRunId(), node);
-    if (!result.isPresent()) {
+    if (!result.isPresent() || result.get().isRequested()) {
       // Sending a request for metrics to the other reaper instances through the Cassandra backend
-      storeNodeMetrics(
-          NodeMetrics.builder()
-              .withCluster(clusterName)
-              .withDatacenter(nodeDc)
-              .withNode(node)
-              .withRequested(true)
-              .build());
+      if (!result.isPresent()) {
+        storeNodeMetrics(
+            NodeMetrics.builder()
+                .withCluster(clusterName)
+                .withDatacenter(nodeDc)
+                .withNode(node)
+                .withRequested(true)
+                .build());
+      }
 
       long start = System.currentTimeMillis();
 
@@ -643,6 +645,7 @@ final class SegmentRunner implements RepairStatusHandler, Runnable {
           // delete the metrics to force other instances to get a refreshed value
           storage.deleteNodeMetrics(repairRunner.getRepairRunId(), node);
         }
+        renewLockSegmentRunners();
       }
     }
     return result;
@@ -656,7 +659,7 @@ final class SegmentRunner implements RepairStatusHandler, Runnable {
 
     Collection<String> nodes = getNodesInvolvedInSegment(dcByNode);
     String dc = EndpointSnitchInfoProxy.create(coordinator).getDataCenter();
-    boolean requireAllHostMetrics = DatacenterAvailability.ALL == context.config.getDatacenterAvailability();
+    boolean requireAllHostMetrics = DatacenterAvailability.LOCAL != context.config.getDatacenterAvailability();
     boolean allLocalDcHostsChecked = true;
     boolean allHostsChecked = true;
     Set<String> unreachableNodes = Sets.newHashSet();
@@ -669,7 +672,7 @@ final class SegmentRunner implements RepairStatusHandler, Runnable {
     for (Pair<String, Future<Optional<NodeMetrics>>> pair : nodeMetricsTasks) {
       try {
         Optional<NodeMetrics> result = pair.getRight().get();
-        if (result.isPresent()) {
+        if (result.isPresent() && !result.get().isRequested()) {
           NodeMetrics metrics = result.get();
           int pendingCompactions = metrics.getPendingCompactions();
           if (pendingCompactions > context.config.getMaxPendingCompactions()) {

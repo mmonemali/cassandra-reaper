@@ -1349,9 +1349,9 @@ public final class CassandraStorage implements IStorage, IDistributedStorage {
   public void releaseLead(UUID leaderId) {
     Preconditions.checkNotNull(leaderId);
     ResultSet lwtResult = session.execute(releaseLeadPrepStmt.bind(leaderId, AppContext.REAPER_INSTANCE_ID));
-
+    LOG.info("Trying to release lead on segment {} for instance {}", leaderId, AppContext.REAPER_INSTANCE_ID);
     if (lwtResult.wasApplied()) {
-      LOG.debug("Released lead on segment {}", leaderId);
+      LOG.info("Released lead on segment {}", leaderId);
     } else {
       assert false : "Could not release lead on segment " + leaderId;
       LOG.error("Could not release lead on segment {}", leaderId);
@@ -1417,6 +1417,7 @@ public final class CassandraStorage implements IStorage, IDistributedStorage {
   @Override
   public void deleteNodeMetrics(UUID runId, String node) {
     long minute = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis());
+    LOG.info("Deleting metrics for node {}", node);
     session.executeAsync(delNodeMetricsByNodePrepStmt.bind(minute, runId, node));
   }
 
